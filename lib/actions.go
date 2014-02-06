@@ -67,7 +67,6 @@ func getConfig(config_path string) (Config, error) {
 	return config, errr
 }
 
-// Edit Configuration
 func ConfigAction(c *cli.Context) {
 	if !hasArgs(c.Args(), 2) {
 		log.Fatal("Incorrect number of arguments to 'config' command")
@@ -138,24 +137,14 @@ func AddAction(c *cli.Context) {
 		log.Fatal("Unable to parse argument for 'add' command")
 	}
 
-	if gill_url.Scheme == "http" || gill_url.Scheme == "https" || gill_url.Scheme == "git" {
+	match, _ := regexp.MatchString(".git", gill_url.Path)
 
-		match, _ := regexp.MatchString(".git", gill_url.Path)
-		fmt.Println(match)
-
-		if !match {
-			log.Fatal("Unable to parse argument for 'add' command")
-		}
-
-		fmt.Println(gill_url.Host, gill_url.Path, err)
-
-		config_path := getConfigPath()
-		d, _ := getConfig(config_path)
-
-		FetchRepo(config_path, gill_url, d)
-
-	} else {
-		log.Fatalf("Unable to parse argument for 'add' command - Scheme '%s' not supported.", gill_url.Scheme)
+	if !match {
+		log.Fatal("Unable to parse argument for 'add' command")
 	}
 
+	config_path := getConfigPath()
+	d, _ := getConfig(config_path)
+
+	FetchRepo(config_path, gill_url, d)
 }
